@@ -255,7 +255,7 @@ details.day-list summary{cursor:pointer;padding:12px 14px;font-weight:700;font-s
       <h1>Hall Live Board</h1>
       <div class="sub">Palau d'Esports l'Illa de Benidorm</div>
     </div>
-    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated 12:18</span></div>
+    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated 12:30</span></div>
   </div>
 </header>
 
@@ -524,7 +524,7 @@ render();
 setInterval(()=>{if(S.live)render();else{NOW=nowMadrid();$("#clk").textContent=ft(NOW.m)}},30000);
 
 /* AUTO_RELOAD: reload every 7 min to pick up the newest published data */
-setTimeout(function(){try{location.reload()}catch(e){}},7*60*1000);
+setTimeout(function(){try{var u=new URL(location.href);u.searchParams.set("v",Date.now());location.replace(u.toString())}catch(e){try{location.reload()}catch(_){}}},5*60*1000); /* cache-busting reload every 5 min */
 </script>
 </body>
 </html>
