@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hall Live Board · Asunción 2027</title>
+<style>
+body{margin:0;background:#F5F0E6;color:#1E1B2E;font:17px/1.45 system-ui,sans-serif;display:grid;place-items:center;min-height:100vh}
+.ld{text-align:center;padding:24px}
+.ld svg{width:120px;height:120px;animation:spin 18s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.ld svg{animation:none}}
+.ld p{margin:14px 0 0;letter-spacing:.12em;text-transform:uppercase;font-size:13px;color:#6A6274}
+.ld .err{color:#B3261E;text-transform:none;letter-spacing:0;font-size:15px;max-width:46ch}
+</style>
+</head>
+<body>
+<div class="ld" id="ld"><svg viewBox="-50 -50 100 100" id="ldsvg" aria-hidden="true"></svg><p>Loading live hall data…</p></div>
+<script>
+/* Hall Live Board — Asunción 2027 skin. Loads the live wchall.html (same data, same update cycle)
+   and re-dresses it: ñandutí lace, ao po'i ground, lapacho accent, tricolour, Guaraní ring numerals.
+   Discipline and age-group colours and all board logic are unchanged. */
+var SRC = /github\.io$/.test(location.hostname) ? "wchall.html" : "https://zsuzsaopraszabo.github.io/wc26-live/wchall.html";
+function nanduti(stroke, fill, sw){
+  sw = sw || 1;
+  var g = '<g fill="none" stroke="'+stroke+'" stroke-width="'+sw+'" stroke-linecap="round">';
+  g += '<circle r="47"/><circle r="43.5" stroke-dasharray="1.2 2.6"/>';
+  for (var a=0; a<180; a+=11.25) g += '<line x1="0" y1="-47" x2="0" y2="47" transform="rotate('+a+')" stroke-opacity=".55"/>';
+  for (var b=0; b<360; b+=22.5) g += '<path d="M0 -40 Q4.5 -34 0 -28 Q-4.5 -34 0 -40Z" transform="rotate('+b+')" fill="'+fill+'" fill-opacity=".35"/>';
+  g += '<circle r="31" stroke-dasharray="2 2"/>';
+  for (var c=0; c<360; c+=30) g += '<ellipse cx="0" cy="-20" rx="4.2" ry="8.5" transform="rotate('+(c+15)+')" fill="'+fill+'" fill-opacity=".5"/>';
+  g += '<circle r="11"/><circle r="7" stroke-dasharray="1 1.6"/><circle r="2.6" fill="'+stroke+'"/>';
+  for (var d=0; d<360; d+=30) g += '<circle cx="0" cy="-35.5" r="2.4" transform="rotate('+d+')"/>';
+  return g + '</g>';
+}
+document.getElementById("ldsvg").innerHTML = nanduti("#A8336A","#A8336A",1.1);
+var GN = ["","peteĩ","mokõi","mbohapy","irundy","po","poteĩ","pokõi","poapy","porundy","pa","pateĩ"];
+var LACE_BG = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100">'+nanduti("#A8336A","#A8336A",.8)+'</svg>');
+var LACE_FAINT = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100"><g opacity=".22">'+nanduti("#A8336A","#A8336A",.8)+'</g></svg>');
+var SKIN = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700;800&display=swap"><style id="asu-skin">' + [
+':root{--bg:#F5F0E6;--surface:#FFFDF8;--surface-2:#EFE8DA;--ink:#1E1B2E;--muted:#625A6C;--line:#E0D6C3;--teal:#A8336A;--aqua:#D9628F;--now:#A8336A;--now-bg:#F7E2EB;--display:"Big Shoulders Display","Arial Narrow",Arial,sans-serif;--body:"Figtree","Segoe UI",Helvetica,Arial,sans-serif;--shadow:0 1px 2px rgba(30,27,46,.06),0 6px 18px rgba(30,27,46,.07);--py-red:#D52B1E}',
+'@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15131F;--surface:#1D1A2A;--surface-2:#252235;--ink:#F3EDE1;--muted:#A9A0B3;--line:#373247;--teal:#F08DB4;--aqua:#F08DB4;--now:#F08DB4;--now-bg:#3B1F2F}}',
+':root[data-theme="dark"]{--bg:#15131F;--surface:#1D1A2A;--surface-2:#252235;--ink:#F3EDE1;--muted:#A9A0B3;--line:#373247;--teal:#F08DB4;--aqua:#F08DB4;--now:#F08DB4;--now-bg:#3B1F2F}',
+'.hdr{background:#1E1B2E;color:#F7F1E6;isolation:isolate}',
+'.hdr .lace{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1}',
+'.hdr .tricolor{position:absolute;left:0;right:0;bottom:0;height:9px;display:flex}.hdr .tricolor i{flex:1;display:block}',
+'.hdr-in{padding:22px 16px 34px}',
+'.hdr .emblem{flex:none;width:92px;height:92px;border-radius:50%;background:#F5F0E6;display:grid;place-items:center;box-shadow:0 0 0 4px rgba(245,240,230,.14),0 8px 22px rgba(0,0,0,.3)}',
+'.hdr .emblem svg{width:80px;height:80px}',
+'.hdr .eyebrow{font:700 13px/1.25 var(--body);letter-spacing:.16em;color:#F2B8CF;opacity:1}',
+'.hdr h1{font:900 clamp(38px,6vw,68px)/.92 var(--display);font-style:normal;letter-spacing:.02em}',
+'.hdr .sub{font-size:15px;opacity:1;color:#E9E1D2;margin-top:6px}.hdr .sub b{color:#fff}',
+'.hdr .welcome{display:inline-block;margin-top:8px;font:600 14px/1.3 var(--body);color:#F7F1E6;border:1px dashed rgba(247,241,230,.45);border-radius:999px;padding:4px 12px}',
+'.hdr .welcome i{font-style:italic;color:#F2B8CF}',
+'.demo{display:inline-flex;align-items:center;gap:6px;margin-left:8px;vertical-align:3px;background:#F5F0E6;color:#1E1B2E;font:800 11px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;border-radius:999px;padding:5px 9px}',
+'.demo::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--py-red);animation:pulse 1.6s infinite}',
+'@media (prefers-reduced-motion:reduce){.demo::before{animation:none}}',
+'.clock b{font:900 clamp(40px,5.4vw,60px)/1 var(--display)}.clock span{color:#E9E1D2}.clock .updpill{background:#F5F0E6;color:#1E1B2E}',
+'h2{font:800 27px/1.05 var(--display);font-style:normal;letter-spacing:.03em;padding-bottom:9px;margin-bottom:12px;background:repeating-linear-gradient(90deg,var(--teal) 0 7px,transparent 7px 12px) left bottom/100% 2px no-repeat}',
+'h2 small{font-style:normal}',
+'.cat,.rc-h .ent b,.day b,.list .tm,.timectl .lbl,.mini b,.ht .hn,.rn,.ht .grp{font-family:var(--display);font-style:normal}',
+'.cat{font-weight:800;letter-spacing:.01em}.panel{border-radius:16px}',
+'section[aria-labelledby="hallh"]{position:relative;overflow:hidden}',
+'section[aria-labelledby="hallh"]::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;background:url("'+LACE_BG+'") center/contain no-repeat;opacity:.13;pointer-events:none}',
+'.hg{background:var(--surface-2);border-radius:14px}',
+'.ht{border-radius:14px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.18)}',
+'.ht.idle{background:var(--surface) url("'+LACE_FAINT+'") right -34px bottom -34px/84px no-repeat}',
+'.hmt b,.minimt b{background:var(--ink);color:var(--bg)}.hz{border-style:dotted}',
+'.gn{display:block;font:700 11px/1.1 var(--body);letter-spacing:.08em;text-transform:lowercase;opacity:.9;margin-top:1px}',
+'.ht .gn{font-size:12px}.ht.idle .gn{color:var(--teal)}.mini .gn{font-size:10px}',
+'.rn{flex-direction:column;line-height:.9}.rn .gn{font-size:9.5px;margin-top:2px;letter-spacing:.04em}',
+'.day[aria-pressed="true"]{background:var(--ink);border-color:var(--ink)}.today{background:var(--teal)}',
+'.chip.me{background:var(--teal);border-color:var(--teal);color:#fff}',
+'.watch{background:var(--ink);color:var(--bg)}.watch::before{border-left-color:var(--py-red)}',
+'.prog i{background:var(--teal)}.tag.fin{background:#F7E2EB;color:#7E2350}',
+'.asu-foot{margin-top:28px;background:#1E1B2E;color:#E9E1D2;position:relative;overflow:hidden}',
+'.asu-foot .in{max-width:1380px;margin:0 auto;padding:22px 16px 30px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}',
+'.asu-foot svg{width:56px;height:56px;flex:none}',
+'.asu-foot b{font:900 30px/1 var(--display);color:#F08DB4;letter-spacing:.03em}',
+'.asu-foot p{margin:0;font-size:14px;max-width:70ch}',
+'.asu-foot .tricolor{position:absolute;left:0;right:0;top:0;height:6px;display:flex}.asu-foot .tricolor i{flex:1}',
+'@media (max-width:640px){.hdr .emblem{width:68px;height:68px}.hdr .emblem svg{width:58px;height:58px}.hdr .welcome{font-size:13px}}'
+].join("\n") + '</style>';
+var TRI = '<div class="tricolor" aria-hidden="true"><i style="background:#D52B1E"></i><i style="background:#FFFFFF"></i><i style="background:#0038A8"></i></div>';
+function header(clockHTML){
+  var lace = '<svg class="lace" viewBox="0 0 1440 300" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">'
+    + '<g transform="translate(1250 150) scale(2.6)" opacity=".22">'+nanduti("#F7F1E6","#F08DB4",.55)+'</g>'
+    + '<g transform="translate(1000 40) scale(1.25)" opacity=".18">'+nanduti("#F7F1E6","#F08DB4",.7)+'</g>'
+    + '<g transform="translate(905 255) scale(.85)" opacity=".16">'+nanduti("#F7F1E6","#F08DB4",.8)+'</g>'
+    + '<g transform="translate(-30 280) scale(1.6)" opacity=".08">'+nanduti("#F7F1E6","#F08DB4",.7)+'</g>'
+    + '</svg>';
+  return '<header class="hdr">' + lace + TRI + '<div class="hdr-in">'
+    + '<span class="emblem" aria-hidden="true"><svg viewBox="-50 -50 100 100">'+nanduti("#A8336A","#A8336A",1.2)+'</svg></span>'
+    + '<div style="min-width:0">'
+    + '<div class="eyebrow">ITF Taekwon-Do World Championships · Asunción 2027<span class="demo">Live demo · WC26 data</span></div>'
+    + '<h1>Hall Live Board</h1>'
+    + '<div class="sub"><b>Asunción, Paraguay</b> · 17–24 October 2027 · Venue to be confirmed</div>'
+    + '<span class="welcome"><i>Peguahẽ porãite!</i> — Welcome to Paraguay</span>'
+    + '</div>' + clockHTML + '</div></header>';
+}
+var FOOT = '<footer class="asu-foot">' + TRI.replace('class="tricolor"','class="tricolor"') + '<div class="in">'
+  + '<svg viewBox="-50 -50 100 100" aria-hidden="true">'+nanduti("#F08DB4","#F08DB4",1.2)+'</svg>'
+  + '<div><b>Aguyje!</b><p>Inspired by ñandutí, the hand-made spider-web lace of Itauguá — eleven rings, woven into one hall. Ring numbers are also shown in Guaraní, Paraguay’s co-official language.</p></div>'
+  + '</div></footer>';
+var HOOK = '<scr'+'ipt>(function(){var GN=' + JSON.stringify(GN) + ';'
+  + 'function add(el,n){if(!el||el.querySelector(".gn"))return;var r=+n;if(!GN[r])return;var s=document.createElement("small");s.className="gn";s.textContent=GN[r];el.appendChild(s)}'
+  + 'function deco(){document.querySelectorAll(".ht").forEach(function(t){var h=t.querySelector(".hn");if(h&&!t.querySelector(".gn")){var s=document.createElement("small");s.className="gn";s.textContent=GN[+h.textContent.trim()]||"";h.insertAdjacentElement("afterend",s)}});'
+  + 'document.querySelectorAll(".mini button").forEach(function(b){var x=b.querySelector("b");if(x)add(b,x.textContent.trim())});'
+  + 'document.querySelectorAll(".rn").forEach(function(r){if(!r.querySelector(".gn")){var n=r.textContent.trim();r.textContent="";var d=document.createElement("span");d.textContent=n;r.appendChild(d);add(r,n)}})}'
+  + 'var q=false;new MutationObserver(function(){if(q)return;q=true;requestAnimationFrame(function(){q=false;deco()})}).observe(document.body,{childList:true,subtree:true});deco();})();</scr'+'ipt>';
+function skin(html){
+  var hs = html.indexOf('<header class="hdr">'), he = html.indexOf('</header>', hs);
+  if (hs < 0 || he < 0) throw new Error("header not found");
+  var cm = html.slice(hs, he).match(/<div class="clock">[\s\S]*?<\/div>/);
+  var clock = (cm ? cm[0] : '<div class="clock"><b id="clk" class="tn">--:--</b></div>').replace(/<span>\s*Benidorm time\s*<\/span>/, '<span>Live feed · Benidorm time</span>');
+  html = html.slice(0, hs) + header(clock) + html.slice(he + 9);
+  html = html.replace(/<title>[\s\S]*?<\/title>/, '<title>Hall Live Board · Asunción 2027</title>');
+  html = html.replace('</head>', SKIN + '</head>');
+  var PRESET = 'if(S.day!==NOW.d){var _sp=daySpan(S.day);S.t=S.day>NOW.d?_sp.st-1:_sp.en}';
+  html = html.replace('if(S.day!==NOW.d){S.live=false}else S.live=true;', 'if(S.day!==NOW.d){S.live=false}else S.live=true;' + PRESET + ';');
+  html = html.replace('S.live=S.day===NOW.d;if(!S.live){', 'S.live=S.day===NOW.d;' + PRESET + ';if(!S.live){');
+  html = html.replace(/<\/body>(?![\s\S]*<\/body>)/, FOOT + HOOK + '</body>');
+  return html;
+}
+fetch(SRC + "?v=" + Date.now(), {cache: "no-store"})
+  .then(function(r){ if(!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
+  .then(function(html){ var out = skin(html); document.open(); document.write(out); document.close(); })
+  .catch(function(e){
+    document.getElementById("ld").innerHTML = '<svg viewBox="-50 -50 100 100" aria-hidden="true">'+nanduti("#A8336A","#A8336A",1.1)+'</svg><p class="err">The live hall data could not be loaded ('+e.message+'). Please reload this page.</p>';
+  });
+</script>
+</body>
+</html>
