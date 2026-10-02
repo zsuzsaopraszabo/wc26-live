@@ -255,7 +255,7 @@ details.day-list summary{cursor:pointer;padding:12px 14px;font-weight:700;font-s
       <h1>Hall Live Board</h1>
       <div class="sub">Palau d'Esports l'Illa de Benidorm</div>
     </div>
-    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated Fri 02 Oct 18:31</span></div>
+    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated Fri 02 Oct 18:46</span></div>
   </div>
 </header>
 
@@ -353,6 +353,7 @@ function pkeys(b){const m=(b.label||"").match(/^Pool (\d+)\//);if(m)return["P"+m
 function bstat(b){ // live status of one schedule block from sportdata draws/results
   if(!b.code||b.lunch)return null;
   if(LIVE.done[b.code]||(LIVE.closed||[]).includes(b.date))return{st:"done"};
+  if(b.date===NOW.d&&NOW.m-TP(b,"e")>90&&!(LIVE.keep||[]).includes(b.code))return{st:"done"}; // >90 min past its planned end: sportdata often never records finals/pool-winner bouts, so treat it as finished instead of keeping the ring "busy" all evening
   const p=PROG.c[b.code];
   if(/^(Pool winner|Final)/.test(b.label)){if(!p)return null;const all=Object.values(p).every(x=>x[1]>0&&x[0]>=x[1]);return{st:all?"ready":"wait"}}
   if(!p)return null;const ks=pkeys(b).filter(k=>p[k]);if(!ks.length)return null;
