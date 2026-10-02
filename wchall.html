@@ -257,7 +257,7 @@ details.day-list summary{cursor:pointer;padding:12px 14px;font-weight:700;font-s
       <h1>Hall Live Board</h1>
       <div class="sub">Palau d'Esports l'Illa de Benidorm</div>
     </div>
-    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated Fri 02 Oct 19:11</span></div>
+    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated Fri 02 Oct 22:47</span></div>
   </div>
 </header>
 
@@ -516,7 +516,7 @@ function focusCur(d){if(!d.open)return;const ul=d.querySelector(".dl"),c=d.query
 document.addEventListener("toggle",e=>{if(e.target.matches&&e.target.matches("details.day-list"))focusCur(e.target)},true);
 document.addEventListener("click",e=>{
   const d=e.target.closest("[data-day]");const j=e.target.closest("[data-jump]");
-  if(d&&d.classList.contains("day")){S.day=d.dataset.day;if(S.day!==NOW.d){S.live=false}else S.live=true;render();return}
+  if(d&&d.classList.contains("day")){S.day=d.dataset.day;if(S.day!==NOW.d){S.live=false;if(S.day>NOW.d){const st=Math.min(...B.filter(b=>b.date===S.day).map(b=>TP(b,"s")));if(isFinite(st))S.t=Math.max(0,st-30)}else{const en=Math.max(...B.filter(b=>b.date===S.day).map(b=>TP(b,"e")));if(isFinite(en))S.t=en}}else S.live=true;render();return} // future day: show it before the start (nothing started yet); past day: show it finished
   if(j){if(j.dataset.day&&j.dataset.day!==S.day){S.day=j.dataset.day;S.live=S.day===NOW.d;if(!S.live){const b=B.find(x=>x.date===S.day&&x.ring==j.dataset.jump);}render()}
     const el=document.getElementById("ring"+j.dataset.jump);if(el){el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});const dd=el.querySelector("details");if(dd){dd.open=true;focusCur(dd)}}}
 });
