@@ -257,7 +257,7 @@ details.day-list summary{cursor:pointer;padding:12px 14px;font-weight:700;font-s
       <h1>Hall Live Board</h1>
       <div class="sub">Palau d'Esports l'Illa de Benidorm</div>
     </div>
-    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated Fri 02 Oct 18:51</span></div>
+    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated Fri 02 Oct 19:01</span></div>
   </div>
 </header>
 
@@ -424,7 +424,7 @@ function hallSVG(t){
     return `<button class="ht${b?"":" idle"}${!b&&st.done?" fin":""}${r===1?" r1":""}" data-jump="${r}" style="${pos};${b?"background:"+col:""}" aria-label="Ring ${r}${b?": "+esc(catLine(b)):""}">
       <b class="hn">${r}</b>${b&&b.code?(()=>{const L=b.label||"";const m=L.match(/^Pool (\d+\/\d+)/);const top=m?"Pool":/^Final/.test(L)?"":/^Pool winner/.test(L)?"Pool winners":"Pool";const big=m?m[1]:/^Final/.test(L)?"FINAL":/^Pool winner (\d+)/.test(L)?L.replace("Pool winner ","#"):"1/1";return `<span class="grp" style="color:${gl||"#fff"}"${gl?` title="Same category now also on rings ${cur[b.code].filter(x=>x!==r).join(", ")}"`:""}>${top?`<small>${top}</small>`:""}${esc(big)}</span>`})():""}
       ${b?`<span class="h1">${b.lunch?"Resumes "+(DELAY[S.day]?"~":"")+ft(T(b,"e")):b.code?esc(AB[s2.d]||s2.d):esc(b.cat)}</span>${s2?`<span class="h2">${esc(s2.sex[0]+" "+s2.age)}</span><span class="h3">${esc(s2.g)}${bx&&bx.st==="live"?` · ${bx.rd==="final"?"Final":"R"+(bx.rd||"?")} ${bx.d}/${bx.tot}`:""}</span>`:""}<i class="hp"><i style="width:${p}%"></i></i>`
-      :(()=>{if(st.done)return `<span class="h1">Finished</span><span class="ole">¡Hasta mañana! 💃<small>Olé · Benidorm</small></span>`;const n=st.next;if(!n)return `<span class="h1">—</span>`;const n2=n.code?short(n.cat):null;
+      :(()=>{if(st.done){const HU={6:"Viszlát holnap!",7:"Szia!",8:"Jó napot!"}[r];return `<span class="h1">Finished</span>${HU?`<span class="ole">${HU} 🇭🇺<small>Hungarian · magyarul</small></span>`:`<span class="ole">¡Hasta mañana! 💃<small>Olé · Benidorm</small></span>`}`}const n=st.next;if(!n)return `<span class="h1">—</span>`;const n2=n.code?short(n.cat):null;
         return `<span class="h1 nxt">Next ${DELAY[S.day]?"~":""}${ft(T(n,"s"))}</span>${n.lunch?"":n2?`<span class="h2">${esc(AB[n2.d]||n2.d)}</span><span class="h3">${esc(n2.sex[0]+" "+n2.age+" · "+n2.g)}</span>`:`<span class="h2">${esc(n.cat)}</span>`}`})()}</button>`};
   return `<div class="hg" role="group" aria-label="Hall seen from the Main Table">
    <div class="hz bl" style="grid-column:2/4;grid-row:1">Bleachers</div>
