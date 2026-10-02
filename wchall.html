@@ -255,7 +255,7 @@ details.day-list summary{cursor:pointer;padding:12px 14px;font-weight:700;font-s
       <h1>Hall Live Board</h1>
       <div class="sub">Palau d'Esports l'Illa de Benidorm</div>
     </div>
-    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated Fri 02 Oct 09:52</span></div>
+    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated Fri 02 Oct 09:58</span></div>
   </div>
 </header>
 
@@ -363,6 +363,7 @@ function bstat(b){ // live status of one schedule block from sportdata draws/res
 function liveRetime(){
   B.forEach(b=>{b.lS=b.lE=null;b.notStarted=false});
   if(!PROG.updated||S.day!==NOW.d||S.day!==PROG.updated.slice(0,10))return;
+  if(!B.filter(b=>b.date===S.day&&b.code&&!B.some(z=>z.code===b.code&&z.date<S.day)).some(b=>{const x=bstat(b);return x&&x.d>0}))return; // sportdata has no bout of today yet (not updated live): keep the official schedule instead of pushing every ring to "next"
   const now=NOW.m;
   for(let r=1;r<=11;r++){const L=B.filter(b=>b.date===S.day&&b.ring===r).sort((a,b)=>a.s-b.s);if(!L.length)continue;
     const isDone=b=>{if(b.cer||b.lunch)return TP(b,"e")<=now;const x=bstat(b);return x?x.st==="done":TP(b,"e")<=now};
