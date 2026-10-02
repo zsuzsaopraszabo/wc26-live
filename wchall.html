@@ -120,6 +120,8 @@ h2 small{font:500 13px var(--body);text-transform:none;color:var(--muted);margin
 .ht .grp{position:absolute;top:8px;right:10px;font:800 28px/1 var(--display);text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.55)}.ht .grp small{display:block;font:700 11px/1.1 var(--body);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1px}
 .ht.idle .nxt{color:var(--teal)}.ht.idle .h2,.ht.idle .h3{color:var(--ink)}
 .ht.idle{background:var(--surface);color:var(--muted);border:1px solid var(--line)}
+.ht.fin{background:#fbf6ea url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%2744%27%20height%3D%2744%27%20viewBox%3D%270%200%2044%2044%27%3E%3Crect%20width%3D%2744%27%20height%3D%2744%27%20fill%3D%27%23fbf6ea%27/%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%232a5aa8%27%20stroke-width%3D%271.6%27%3E%3Ccircle%20cx%3D%2722%27%20cy%3D%2722%27%20r%3D%279%27/%3E%3Cpath%20d%3D%27M22%204%20L26%2013%20L22%2022%20L18%2013Z%20M22%2040%20L26%2031%20L22%2022%20L18%2031Z%20M4%2022%20L13%2018%20L22%2022%20L13%2026Z%20M40%2022%20L31%2018%20L22%2022%20L31%2026Z%27/%3E%3C/g%3E%3Cg%20fill%3D%27%232a5aa8%27%3E%3Cpath%20d%3D%27M0%200h7a7%207%200%200%201-7%207z%20M44%200h-7a7%207%200%200%200%207%207z%20M0%2044h7a7%207%200%200%200-7-7z%20M44%2044h-7a7%207%200%200%201%207-7z%27/%3E%3C/g%3E%3Ccircle%20cx%3D%2722%27%20cy%3D%2722%27%20r%3D%273.2%27%20fill%3D%27%23e3a018%27/%3E%3C/svg%3E") repeat;background-size:30px 30px;border:2px solid #2a5aa8;color:#1d3f78}.ht.fin::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(251,246,234,.93) 0 58%,rgba(251,246,234,.35));pointer-events:none}.ht.fin>*{position:relative}.ht.fin .hn{color:#1d3f78}.ht.fin .h1{color:#1d3f78}.ht.fin .ole{font:italic 700 clamp(12px,1.1vw,15px)/1.2 Georgia,serif;color:#c8102e;margin-top:2px}.ht.fin .ole small{display:block;font:600 10.5px/1.3 system-ui,sans-serif;color:#7a5a12;font-style:normal;letter-spacing:.02em}
+
 .ht .hn{font:800 clamp(38px,3.6vw,54px)/1 var(--display)}
 .ht .h1{font-weight:800;font-size:clamp(16px,1.5vw,21px);line-height:1.15}
 .ht .h2{font-weight:700;font-size:clamp(15px,1.4vw,19px);line-height:1.2}
@@ -255,7 +257,7 @@ details.day-list summary{cursor:pointer;padding:12px 14px;font-weight:700;font-s
       <h1>Hall Live Board</h1>
       <div class="sub">Palau d'Esports l'Illa de Benidorm</div>
     </div>
-    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated Fri 02 Oct 18:46</span></div>
+    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated Fri 02 Oct 18:50</span></div>
   </div>
 </header>
 
@@ -419,10 +421,10 @@ function hallSVG(t){
   const tile=r=>{const st=stateOn(r,S.day,t),b=st.cur;const gl=b&&b.code&&GL[b.code];const col=b?(b.lunch?"#8b98a0":disc(b.cat).c):"";const s2=b&&b.code?short(b.cat):null;
     const bx=b?bstat(b):null;const p=b?(bx&&bx.tot&&bx.st!=="done"?bx.d/bx.tot*100:Math.max(0,Math.min(100,(t-T(b,"s"))/(T(b,"e")-T(b,"s"))*100))):0;
     const pos=r===1?"grid-column:3;grid-row:2/4;align-self:center":`grid-column:${P[r][0]};grid-row:${P[r][1]}`;
-    return `<button class="ht${b?"":" idle"}${r===1?" r1":""}" data-jump="${r}" style="${pos};${b?"background:"+col:""}" aria-label="Ring ${r}${b?": "+esc(catLine(b)):""}">
+    return `<button class="ht${b?"":" idle"}${!b&&st.done?" fin":""}${r===1?" r1":""}" data-jump="${r}" style="${pos};${b?"background:"+col:""}" aria-label="Ring ${r}${b?": "+esc(catLine(b)):""}">
       <b class="hn">${r}</b>${b&&b.code?(()=>{const L=b.label||"";const m=L.match(/^Pool (\d+\/\d+)/);const top=m?"Pool":/^Final/.test(L)?"":/^Pool winner/.test(L)?"Pool winners":"Pool";const big=m?m[1]:/^Final/.test(L)?"FINAL":/^Pool winner (\d+)/.test(L)?L.replace("Pool winner ","#"):"1/1";return `<span class="grp" style="color:${gl||"#fff"}"${gl?` title="Same category now also on rings ${cur[b.code].filter(x=>x!==r).join(", ")}"`:""}>${top?`<small>${top}</small>`:""}${esc(big)}</span>`})():""}
       ${b?`<span class="h1">${b.lunch?"Resumes "+(DELAY[S.day]?"~":"")+ft(T(b,"e")):b.code?esc(AB[s2.d]||s2.d):esc(b.cat)}</span>${s2?`<span class="h2">${esc(s2.sex[0]+" "+s2.age)}</span><span class="h3">${esc(s2.g)}${bx&&bx.st==="live"?` · ${bx.rd==="final"?"Final":"R"+(bx.rd||"?")} ${bx.d}/${bx.tot}`:""}</span>`:""}<i class="hp"><i style="width:${p}%"></i></i>`
-      :(()=>{if(st.done)return `<span class="h1">Finished</span>`;const n=st.next;if(!n)return `<span class="h1">—</span>`;const n2=n.code?short(n.cat):null;
+      :(()=>{if(st.done)return `<span class="h1">Finished</span><span class="ole">¡Hasta mañana! 💃<small>Olé · Benidorm</small></span>`;const n=st.next;if(!n)return `<span class="h1">—</span>`;const n2=n.code?short(n.cat):null;
         return `<span class="h1 nxt">Next ${DELAY[S.day]?"~":""}${ft(T(n,"s"))}</span>${n.lunch?"":n2?`<span class="h2">${esc(AB[n2.d]||n2.d)}</span><span class="h3">${esc(n2.sex[0]+" "+n2.age+" · "+n2.g)}</span>`:`<span class="h2">${esc(n.cat)}</span>`}`})()}</button>`};
   return `<div class="hg" role="group" aria-label="Hall seen from the Main Table">
    <div class="hz bl" style="grid-column:2/4;grid-row:1">Bleachers</div>
