@@ -268,7 +268,7 @@ details.day-list summary{cursor:pointer;padding:12px 14px;font-weight:700;font-s
       <h1>Hall Live Board</h1>
       <div class="sub">Palau d'Esports l'Illa de Benidorm</div>
     </div>
-    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated Sun 04 Oct 11:26</span></div>
+    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated Sun 04 Oct 11:28</span></div>
   </div>
 </header>
 
@@ -519,10 +519,10 @@ function finalView(){
   <p>Congratulations on every result – the shining ones and the ones that shine a little less this time – and on every brave performance on the mat. See you at the next championship!</p>
   <div class="rb"><i style="background:#d8322b"></i><i style="background:#1f9d55"></i><i style="background:#e8b21c"></i><i style="background:#1f5fbf"></i></div></section>
   <section class="panel wst"><h2>World Cup in numbers</h2>
-  <div class="kpis"><div class="kpi"><b>${cats}</b><span>categories decided</span></div><div class="kpi"><b>${L.length}</b><span>nations on the podium</span></div><div class="kpi"><b>${medals}</b><span>medals awarded</span></div><div class="kpi"><b>${days}</b><span>competition days</span></div><div class="kpi"><b>11</b><span>rings</span></div></div>
+  <div class="kpis"><div class="kpi"><b>${cats}<small style="font-size:16px;color:var(--muted)"> / ${[...new Set(B.filter(b=>b.code).map(b=>b.code))].length}</small></b><span>categories with published results (of all scheduled)</span></div><div class="kpi"><b>${L.length}</b><span>nations on the podium</span></div><div class="kpi"><b>${medals}</b><span>medals in the published results</span></div><div class="kpi"><b>${days}</b><span>competition days</span></div><div class="kpi"><b>11</b><span>rings</span></div></div>
   <h2>Medal table <small>from the official sportdata results</small></h2>
   <div style="overflow-x:auto"><table class="mt"><thead><tr><th class="n">#</th><th>Nation</th><th class="n">🥇</th><th class="n">🥈</th><th class="n">🥉</th><th class="n">Total</th></tr></thead><tbody>${rows}</tbody></table></div>
-  <p class="muted" style="font-size:13px;margin:12px 0 0">Based on the final results published on sportdata for individual and team categories; a few scored categories (special technique, power breaking) had incomplete published results and may be missing.</p></section></div>`;
+  <p class="muted" style="font-size:13px;margin:12px 0 0">Counts only the categories whose final results were published on sportdata – categories without published results are not included yet.</p></section></div>`;
 }
 function render(){
   if(FINAL){NOW=nowMadrid();$("#clk").textContent=ft(NOW.m);const bar=document.querySelector(".bar");if(bar)bar.hidden=true;const mn=document.querySelector("main.wrap");if(mn)mn.innerHTML=finalView();return}
