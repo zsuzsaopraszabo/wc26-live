@@ -208,6 +208,17 @@ details.day-list summary{cursor:pointer;padding:12px 14px;font-weight:700;font-s
  .rc-h{flex-wrap:wrap}.watch{padding:9px 14px}.timectl{flex-wrap:wrap}.timectl .btn{order:2}.dayprog{flex-basis:100%}
  .dl li{grid-template-columns:minmax(0,1fr)}.panel{padding:12px}}
 .clock .updpill{display:block;width:max-content;max-width:100%;margin-top:8px;text-transform:none!important;letter-spacing:0!important;background:rgba(255,255,255,.95);color:#0b5566;font-weight:800;font-size:15px;letter-spacing:.02em;text-transform:none;padding:6px 12px;border-radius:999px;white-space:normal}.findtop{margin:14px 0}.findtop .res{max-height:420px;overflow:auto}
+.fin-wrap{max-width:1100px;margin:0 auto}
+.thx{position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2233,#0b5566);color:#fff;border-radius:18px;padding:34px 30px;margin:22px 0}
+.thx .k{font:700 13px/1 var(--body);letter-spacing:.16em;text-transform:uppercase;opacity:.85}
+.thx h2{font:800 clamp(28px,4vw,44px)/1.08 var(--display,inherit);margin:10px 0 12px;color:#fff}
+.thx p{font-size:clamp(16px,1.6vw,19px);line-height:1.5;margin:0;max-width:62ch;opacity:.95}
+.thx .rb{display:flex;gap:6px;margin-top:20px}.thx .rb i{height:5px;flex:1;border-radius:3px}
+.wst h2{margin-top:0}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:6px 0 18px}
+.kpi{background:var(--surface-2);border-radius:12px;padding:14px}.kpi b{display:block;font-size:30px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}.kpi span{color:var(--muted);font-size:14px;font-weight:600}
+.mt{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}.mt th{text-align:left;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 6px;border-bottom:2px solid var(--line)}
+.mt td{padding:7px 6px;border-bottom:1px solid var(--line)}.mt td.n{text-align:center;width:52px}.mt th.n{text-align:center}.mt td.tot{font-weight:800}.mt tr.top td{background:rgba(232,178,28,.08)}
+.mt .fl{font-size:20px;margin-right:8px;vertical-align:-2px}
 </style>
 </head>
 <body>
@@ -257,7 +268,7 @@ details.day-list summary{cursor:pointer;padding:12px 14px;font-weight:700;font-s
       <h1>Hall Live Board</h1>
       <div class="sub">Palau d'Esports l'Illa de Benidorm</div>
     </div>
-    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated Sat 03 Oct 21:16</span></div>
+    <div class="clock"><b id="clk" class="tn">--:--</b><span>Benidorm time</span><span class="updpill">🔄 Updated Sun 04 Oct 11:26</span></div>
   </div>
 </header>
 
@@ -495,7 +506,26 @@ function renderFind(){
   const hit=B.filter(b=>b.code&&words.every(w=>(b.code+" "+b.cat+" "+catLine(b)).toLowerCase().includes(w))).sort((a,b)=>a.date.localeCompare(b.date)||a.s-b.s).slice(0,40);
   $("#res").innerHTML=hit.length?`<ul class="list">${hit.map(b=>`<li><span class="tm tn">${tt(b.date,T(b,"s"))}</span><span>${esc(catLine(b))} ${winTag(b)}<br><span class="muted">${DAYS.find(d=>d[0]===b.date)[1]} · Ring ${b.ring} · ${esc(poolTxt(b))} · #${b.code}</span> <button class="chip" data-jump="${b.ring}" data-day="${b.date}">Show</button></span></li>`).join("")}</ul>`:`<p class="muted">No category matches “${esc(S.q)}”.</p>`;
 }
+const FINAL=true; // competition over: thank-you + world statistics only
+function finalView(){
+  const M={};let cats=0,medals=0;
+  Object.entries(LIVE.done).forEach(([c,v])=>{cats++;v.forEach(x=>{const p=x[0];if(p<1||p>3)return;const k=String(x[2]||"").toUpperCase().trim();if(!k)return;const m=M[k]=M[k]||{g:0,s:0,b:0};m[p===1?"g":p===2?"s":"b"]++;medals++})});
+  const L=Object.entries(M).map(([k,m])=>({k,...m,t:m.g+m.s+m.b})).sort((a,b)=>b.g-a.g||b.s-a.s||b.b-a.b||a.k.localeCompare(b.k));
+  const nice=k=>k.toLowerCase().replace(/(^|[\s-])\S/g,s=>s.toUpperCase());
+  let rk=0,prev=null;const rows=L.map((r,i)=>{const key=r.g+"|"+r.s+"|"+r.b;if(key!==prev){rk=i+1;prev=key}return `<tr class="${rk<=3?"top":""}"><td class="n">${rk}</td><td><span class="fl">${flag(r.k)}</span>${esc(nice(r.k))}</td><td class="n">${r.g}</td><td class="n">${r.s}</td><td class="n">${r.b}</td><td class="n tot">${r.t}</td></tr>`}).join("");
+  const days=[...new Set(B.map(b=>b.date))].length;
+  return `<div class="fin-wrap"><section class="thx"><div class="k">10th Taekwon-Do ITF World Cup · Benidorm 2026</div>
+  <h2>Thank you for being with us!</h2>
+  <p>Congratulations on every result – the shining ones and the ones that shine a little less this time – and on every brave performance on the mat. See you at the next championship!</p>
+  <div class="rb"><i style="background:#d8322b"></i><i style="background:#1f9d55"></i><i style="background:#e8b21c"></i><i style="background:#1f5fbf"></i></div></section>
+  <section class="panel wst"><h2>World Cup in numbers</h2>
+  <div class="kpis"><div class="kpi"><b>${cats}</b><span>categories decided</span></div><div class="kpi"><b>${L.length}</b><span>nations on the podium</span></div><div class="kpi"><b>${medals}</b><span>medals awarded</span></div><div class="kpi"><b>${days}</b><span>competition days</span></div><div class="kpi"><b>11</b><span>rings</span></div></div>
+  <h2>Medal table <small>from the official sportdata results</small></h2>
+  <div style="overflow-x:auto"><table class="mt"><thead><tr><th class="n">#</th><th>Nation</th><th class="n">🥇</th><th class="n">🥈</th><th class="n">🥉</th><th class="n">Total</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <p class="muted" style="font-size:13px;margin:12px 0 0">Based on the final results published on sportdata for individual and team categories; a few scored categories (special technique, power breaking) had incomplete published results and may be missing.</p></section></div>`;
+}
 function render(){
+  if(FINAL){NOW=nowMadrid();$("#clk").textContent=ft(NOW.m);const bar=document.querySelector(".bar");if(bar)bar.hidden=true;const mn=document.querySelector("main.wrap");if(mn)mn.innerHTML=finalView();return}
   NOW=nowMadrid();$("#clk").textContent=ft(NOW.m);
   liveRetime();
   const t=curT();
